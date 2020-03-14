@@ -91,6 +91,9 @@ def get_data(relpath='../res/'):
     return data
 
 def explore_data(tr, te, ev):
+
+    all_shapes = []
+
     for i, t in enumerate(tr):
         train_size = np.shape(t['train'])
         test_size = np.shape(t['test'])
@@ -100,21 +103,13 @@ def explore_data(tr, te, ev):
             input_shapes.append(np.shape(e['input']))
             output_shapes.append(np.shape(e['output']))
 
-
-
+        # train only
+        all_shapes.append([input_shapes, output_shapes])
 
         print('    ', 'input shapes', input_shapes)
         print('    ', 'output shapes', output_shapes)
 
-
-
-
-
-
-
-
-
-
+    print(max(all_shapes))
 
 def main():
     tr, te, ev = get_data()
@@ -126,10 +121,3 @@ if __name__ == '__main__':
     main()
 
 
-"""
-funcs
-min, max, avg ==, -, +, *, /, xor 
-
-
-
-"""
