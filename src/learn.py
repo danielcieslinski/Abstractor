@@ -8,20 +8,6 @@ def find_func(inp, out):
     match_features
 """
 
-D = {}
-
-
-def test_matrix():
-    F = FeatureMatrix.from_raw_values(np.array([[1,2,3],[2,3,4],[5,4,3]]))
-    # print(F.m)
-    # print(F)
-    F[0,1] = 1
-    # print(m[0,1])
-    # print(m.m)
-    # print(F[0,1])
-    print(F.m)
-
-
 class Cell:
     def __init__(self, x, y, v):
         self.x = x
@@ -29,17 +15,21 @@ class Cell:
         self.v = v
 
 class FeatureMatrix:
+    """
+    Call example:
+    fm = FeatureMatrix.from_raw_values([[1,2,3],[2,3,4],[5,4,3]])
+    """
+
     def __init__(self, m=None):
         self.m = m
 
-    # @lru_cache()
     @classmethod
     def from_raw_values(cls, arr, method='iter'):
-        if method == 'iter': return cls(m=cls.ndarr_to_FM_iter(arr))
+        if method == 'iter': return cls(m=cls.ndarr_to_FM_iterative(arr))
 
     @classmethod
     def empty(cls, size, default_val=None):
-        if not isinstance(size, tuple):
+        if not isinstance(size, (tuple, list)):
             raise ValueError('Supporting only 2D matrices')
         y, x = size
         if isinstance(x, int) and isinstance(y, int):
@@ -47,10 +37,11 @@ class FeatureMatrix:
 
         raise ValueError('Values of tuples have to be Integers')
 
-    # @lru_cache()
     @staticmethod
-    def ndarr_to_FM_iter(arr):
+    def ndarr_to_FM_iterative(arr):
         """
+        Converts numpy array of int values to FeatureMatrix
+
         :param arr: numpy array 2D only at the moment
         :return: Feature matrix of cells
         """
@@ -62,6 +53,9 @@ class FeatureMatrix:
 
         return out
 
+    def __call__(self, *args, **kwargs):
+        pass
+
 
     #Just return value of main numpy array
     def __setitem__(self, item, value):
@@ -70,31 +64,38 @@ class FeatureMatrix:
     def __getitem__(self, item):
             return self.m[item]
 
-    # def __setitem__(self, item, value):
-    #     if isinstance(item, tuple):
-    #         y, x = item
-    #         self.m[y][x] = value
-    #
-    # def __getitem__(self, item):
-    #     if isinstance(item, tuple):
-    #         y, x = item
-    #         return self.m[y][x]
-
-
 class Task:
     def __init__(self,index, task, tofeatured=True):
         self.index = index
-        self.train = task['train']
-        self.test = task['test']
+        self.raw_train = task['train']
+        self.raw_test = task['test']
+
+        # Corrseponding pairs
+        self.train_inp = []
+        self.train_out = []
+
 
         self.file_name = None #TODO each task is sorted alphabetically, when loading
-
         if tofeatured: self._raw_matrix_to_featured() #In place
 
     def _raw_matrix_to_featured(self):
-        self.train = list(map(FeatureMatrix, self.train))
+        for i in range(len(self.train)):
+            print(self.train[i])
+            self.train
+            self.train = list(map(FeatureMatrix.from_raw_values, self.train))
 
 
+def main():
+    tr, te, ev = utils.get_data()
+    Task(298, tr[298])
+
+def test_matrix():
+    F = FeatureMatrix.empty((2,3))
+    # F = FeatureMatrix()
+    fm = FeatureMatrix.from_raw_values([[1,2,3],[2,3,4],[5,4,3]])
+    # F = FeatureMatrix(m=[1,2])
+    F[0,1] = 1
+    print(F.m)
 
 def find_features(c1, c2):
     # if len(c1) != 1 or len(c2) != 1
@@ -141,18 +142,12 @@ def solve_task(task):
     calc_features(tr_samples[0]['input'])
 
 
-def main():
-    tr, te, ev = utils.get_data()
-    solve_task(tr[298])
 
 
 if __name__ == '__main__':
-    test_matrix()
-    # a = np.array([1,2,3,4])
-    # print(a-5)
+    # test_matrix()
+    main()
 
-
-    # main()
 
 """
 operations: X! * Y!
