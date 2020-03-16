@@ -14,6 +14,13 @@ class Cell:
         self.y = y
         self.v = v
 
+    def __str__(self):
+        return str(self.v)
+
+    def __len__(self):
+        return len(self.v)
+
+
 class FeatureMatrix:
     """
     Call example:
@@ -53,14 +60,20 @@ class FeatureMatrix:
 
         return out
 
+    def m_type(self):
+        return type(self.m)
+
+    def __str__(self):
+        return str(self.m)
+
     def __call__(self, *args, **kwargs):
-        pass
+        return self.m
 
-
+    def __len__(self):
+        return len(self.m)
     #Just return value of main numpy array
     def __setitem__(self, item, value):
             self.m[item] = value
-
     def __getitem__(self, item):
             return self.m[item]
 
@@ -70,24 +83,53 @@ class Task:
         self.raw_train = task['train']
         self.raw_test = task['test']
 
-        # Corrseponding pairs
-        self.train_inp = []
-        self.train_out = []
-
-
         self.file_name = None #TODO each task is sorted alphabetically, when loading
-        if tofeatured: self._raw_matrix_to_featured() #In place
 
-    def _raw_matrix_to_featured(self):
-        for i in range(len(self.train)):
-            print(self.train[i])
-            self.train
-            self.train = list(map(FeatureMatrix.from_raw_values, self.train))
+        if tofeatured:
+            self.train = [self._Example(e) for e in self.raw_train]
+            self.test = [self._Example(e) for e in self.raw_test]
+
+    def __raw_data_to_featured(self):
+        for e in self.raw_train:
+            self.train.append(self._Example(e))
+
+    def __unparsed(self):
+        return {'train': self.raw_train, 'test': self.raw_test}
+
+    def summary(self):
+        print('Task number:', self.index)
+        print('Number of train examples',len(self.train))
+
+        print(self.train[0].input[0,1].v)
+
+        input_shapes, output_shapes = [], []
+
+        for e in self.train:
+            input_shapes.append(np.shape(e.input))
+            output_shapes.append(np.shape(e.output))
+
+        print('    ', 'input shapes', input_shapes)
+        print('    ', 'output shapes', output_shapes)
+
+        return
+
+    def plot(self):
+        utils.plot_task(self.__unparsed())
+
+    class _Example:
+        def __init__(self, e, to_featured=True):
+            self.input = e['input']
+            self.output = e['output']
+
+            if to_featured:
+                self.data_to_featured()
+
+        def data_to_featured(self):
+            self.input = FeatureMatrix.from_raw_values(self.input)
+            self.output = FeatureMatrix.from_raw_values(self.output)
 
 
-def main():
-    tr, te, ev = utils.get_data()
-    Task(298, tr[298])
+
 
 def test_matrix():
     F = FeatureMatrix.empty((2,3))
@@ -110,46 +152,16 @@ def find_features(c1, c2):
 
     print(c1, c2)
 
-
-def calc_features(m):
-    """
-    :param m: Matrix
-    :return:
-    """
-    m = np.array(m)
-    print(np.shape(m))
-
-    # x = map(find_features, m) #for_row
-    # x = map(find_features, x) #for cell
-
-    ym, xm = np.shape(m)
-    print(ym)
-
-    for y1 in range(ym):
-        for x1 in range(xm):
-            for y2 in range(ym):
-                for x2 in range(xm):
-                    find_features([m[y1][x1], y1, x1], [m[y2][x2], y2, x2])
-
-
-
-
-def solve_task(task):
-    # utils.plot_task(task)
-    tr_samples = task['train']
-    # print(s0)
-    print(tr_samples[0])
-    calc_features(tr_samples[0]['input'])
-
-
-
+def main():
+    tr, te, ev = utils.get_data()
+    t = Task(298, tr[298])
+    t.summary()
+    t.plot()
 
 if __name__ == '__main__':
-    # test_matrix()
     main()
 
 
 """
 operations: X! * Y!
-
 """
