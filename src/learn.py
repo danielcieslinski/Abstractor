@@ -1,6 +1,7 @@
 import numpy as np
 import utils
 from methodtools import lru_cache
+from pprint import pprint
 
 """
 def find_func(inp, out):
@@ -9,10 +10,48 @@ def find_func(inp, out):
 """
 
 class Cell:
-    def __init__(self, x, y, v):
-        self.x = x
+    def __init__(self, y, x, v):
         self.y = y
+        self.x = x
         self.v = v
+        """
+        Feature vector
+        0: x
+        1: y
+        """
+        self.fv = {}
+
+    def calc_features(self, matrix):
+        """
+        :param matrix: Numpy of array matrices(FeaturedMatrix.m)
+        :return:
+        """
+        y, x = np.shape(matrix)
+
+        @lru_cache()
+        def xy_maps():
+            f = lambda a, b: np.repeat(np.arange(a), b).reshape((a, b))
+            return f(y, x), f(x, y).T.copy()
+
+
+        def xy_diffs(ym, xm):
+            # TODO axis why
+            df = lambda m, s, i, a: np.roll(np.abs(np.roll(m - s // 2, - s//2, axis=a)), i, axis=a)
+            return df(ym, y, self.y, 0), df(xm, x, self.x, 1) #t comes for shift type
+
+        # def test():
+        #     # xy_maps_tests
+        #     assert all(ym[0, :]) == 0
+        #     assert all(xm[:, 0]) == 0
+        #     assert all(ydf[self.y, :]) == 0
+        #     assert all(xdf[self.x, :]) == 0
+
+        ydf, xdf = xy_diffs(*xy_maps())
+
+
+
+    def __call__(self, *args, **kwargs):
+        return self.v
 
     def __str__(self):
         return str(self.v)
@@ -20,6 +59,20 @@ class Cell:
     def __len__(self):
         return len(self.v)
 
+    def __add__(self, other):
+        return self.v + other
+
+    def __matmul__(self, other):
+        return self.v * other
+
+    def __copy__(self):
+        return Cell(self.x, self.y, self.v)
+
+    def __deepcopy__(self, memodict={}):
+        return Cell(self.x, self.y, self.v.copy())
+
+    def copy(self):
+        return self.__copy__()
 
 class FeatureMatrix:
     """
@@ -36,7 +89,7 @@ class FeatureMatrix:
 
     @classmethod
     def empty(cls, size, default_val=None):
-        if not isinstance(size, (tuple, list)):
+        if not isinstance(size, (tuple, list)):# TODO Better check
             raise ValueError('Supporting only 2D matrices')
         y, x = size
         if isinstance(x, int) and isinstance(y, int):
@@ -63,6 +116,10 @@ class FeatureMatrix:
     def m_type(self):
         return type(self.m)
 
+
+    # def shape(self):
+        # return len(self.m)
+
     def __str__(self):
         return str(self.m)
 
@@ -71,11 +128,19 @@ class FeatureMatrix:
 
     def __len__(self):
         return len(self.m)
+
+    def __deepcopy__(self, memodict={}):
+        return FeatureMatrix(m=self.m.deepcopy())
+
     #Just return value of main numpy array
     def __setitem__(self, item, value):
             self.m[item] = value
+
     def __getitem__(self, item):
             return self.m[item]
+    # math
+    def __add__(self, other):
+        return self.m + other
 
 class Task:
     def __init__(self,index, task, tofeatured=True):
@@ -86,12 +151,12 @@ class Task:
         self.file_name = None #TODO each task is sorted alphabetically, when loading
 
         if tofeatured:
-            self.train = [self._Example(e) for e in self.raw_train]
-            self.test = [self._Example(e) for e in self.raw_test]
+            self.train = [self.__Example(e) for e in self.raw_train]
+            self.test = [self.__Example(e) for e in self.raw_test]
 
     def __raw_data_to_featured(self):
         for e in self.raw_train:
-            self.train.append(self._Example(e))
+            self.train.append(self.__Example(e))
 
     def __unparsed(self):
         return {'train': self.raw_train, 'test': self.raw_test}
@@ -111,12 +176,10 @@ class Task:
         print('    ', 'input shapes', input_shapes)
         print('    ', 'output shapes', output_shapes)
 
-        return
-
     def plot(self):
         utils.plot_task(self.__unparsed())
 
-    class _Example:
+    class __Example:
         def __init__(self, e, to_featured=True):
             self.input = e['input']
             self.output = e['output']
@@ -156,7 +219,9 @@ def main():
     tr, te, ev = utils.get_data()
     t = Task(298, tr[298])
     t.summary()
-    t.plot()
+    # print(t.train[0].input)
+    # t.plot()
+    t.train[0].input[2][4].calc_features(t.train[0].input)
 
 if __name__ == '__main__':
     main()
