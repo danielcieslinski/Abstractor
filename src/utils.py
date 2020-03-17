@@ -107,6 +107,7 @@ def explore_data(tr, te, ev):
         print('    ', 'output shapes', output_shapes)
 
     print(max(all_shapes))
+    print(min(all_shapes))
 
 def main():
     tr, te, ev = get_data()
