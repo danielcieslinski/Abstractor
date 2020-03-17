@@ -33,7 +33,7 @@ class FeatureCalculator:
     def features(self):
         ym, xm = self.xy_maps()
         ydf, xdf = self.xy_diffs(ym, xm)
-        # self.test()
+        self.test()
         # functions = [min, max, avg ==, -, +, *, /, !=, <, >]
         # mt = self.matrixer()
         ma = self.m.m
@@ -105,10 +105,10 @@ class FeatureCalculator:
         ym, xm = self.xy_maps()
         ydf, xdf = self.xy_diffs(ym, xm)
 
-        print('YM \n', ym)
-        print('XM \n', xm)
-        print('ydf \n', ydf)
-        print('xdf \n', xdf)
+        # print('YM \n', ym)
+        # print('XM \n', xm)
+        # print('ydf \n', ydf)
+        # print('xdf \n', xdf)
 
         assert all(ym[0, :]) == 0
         assert all(xm[:, 0]) == 0
@@ -121,3 +121,7 @@ cy, cx = 0, 1
 fc = FeatureCalculator(cy, cx, fm[cy,cx], fm)
 fc.test()
 # print(fc.m)
+
+"""
+rules: 
+"""
