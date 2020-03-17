@@ -66,9 +66,6 @@ def plot_task(task):
     plt.tight_layout()
     plt.show()
 
-
-
-
 def get_data(relpath='../res/'):
     """
     :param relpath: relative path to resource folder

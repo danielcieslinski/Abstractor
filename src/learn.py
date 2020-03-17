@@ -9,7 +9,10 @@ def find_func(inp, out):
     match_features
 """
 
-class Cell:
+class Cell(int):
+    def __new__(cls, *args, **kwargs):
+        return super(Cell, cls).__new__(cls, args[2])
+
     def __init__(self, y, x, v):
         self.y = y
         self.x = x
@@ -21,50 +24,30 @@ class Cell:
         """
         self.fv = {}
 
-    def calc_features(self, matrix):
-        """
-        :param matrix: Numpy of array matrices(FeaturedMatrix.m)
-        :return:
-        """
-        y, x = np.shape(matrix)
-
-        @lru_cache()
-        def xy_maps():
-            f = lambda a, b: np.repeat(np.arange(a), b).reshape((a, b))
-            return f(y, x), f(x, y).T.copy()
-
-
-        def xy_diffs(ym, xm):
-            # TODO axis why
-            df = lambda m, s, i, a: np.roll(np.abs(np.roll(m - s // 2, - s//2, axis=a)), i, axis=a)
-            return df(ym, y, self.y, 0), df(xm, x, self.x, 1) #t comes for shift type
-
-        # def test():
-        #     # xy_maps_tests
-        #     assert all(ym[0, :]) == 0
-        #     assert all(xm[:, 0]) == 0
-        #     assert all(ydf[self.y, :]) == 0
-        #     assert all(xdf[self.x, :]) == 0
-
-        ydf, xdf = xy_diffs(*xy_maps())
-
-
-
-    def __call__(self, *args, **kwargs):
-        return self.v
-
     def __str__(self):
         return str(self.v)
 
     def __len__(self):
         return len(self.v)
 
+    #math
     def __add__(self, other):
         return self.v + other
+
+    def __abs__(self):
+            return abs(self.v)
+
+    def __ceil__(self):
+        return np.ceil(self.v)
+
+    def __sub__(self, other):
+        return self.v - other
 
     def __matmul__(self, other):
         return self.v * other
 
+
+    #copy
     def __copy__(self):
         return Cell(self.x, self.y, self.v)
 
@@ -220,7 +203,7 @@ def main():
     t = Task(298, tr[298])
     t.summary()
     # print(t.train[0].input)
-    # t.plot()
+    t.plot()
     t.train[0].input[2][4].calc_features(t.train[0].input)
 
 if __name__ == '__main__':
