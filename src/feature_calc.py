@@ -178,6 +178,7 @@ https://arxiv.org/pdf/1611.01989.pdf
 https://arxiv.org/pdf/1904.06317.pdf
 http://sci.tamucc.edu/~cams/projects/206.pdf
 https://arxiv.org/pdf/1711.03243v3.pdf
+https://stanford.edu/~jlmcc/papers/SaxeMcCGanguli13CogSciProc.pdf
 """
 
 
