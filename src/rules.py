@@ -38,7 +38,6 @@ class ExtendedMatrix:
         # --------------
         self.chain = []
 
-
         # --------------
         #Only init call
         # self.class_grouping_refresh()
@@ -73,14 +72,10 @@ class ExtendedMatrix:
 
     # Setters/getters
 
-
-    #
-
     def __getitem__(self, item):
         return self.M[item]
 
     def __setitem__(self, key, value):
-
         if isinstance(key, tuple) and len(key) == 2:
             yk, xk = key
             if isinstance(yk, int) and isinstance(xk, int):
@@ -92,8 +87,8 @@ class ExtendedMatrix:
 
         # else: self.bulk_create(key, value)
         # else: self.
-    # Test
 
+    # Test
     def test(self):
         print('Printing matrix')
         print(self.M)
@@ -110,44 +105,12 @@ class ExtendedMatrix:
         print(self.M)
         print(self.Tclasses)
 
-
-
-
 class LearningPair:
     def __init__(self, IM, OM):
         self.IM = IM
         self.OM = OM
 
     def select_init_learning_M(self):
-        pass
-
-
-
-
-class UniversalLearner:
-    def __init__(self, IMs, OMs):
-        """
-        :param IMs: [ExtendedMatrix(inp1), ...]
-        :param OMs:: [ExtendedMatrix(out1), ...
-        """
-        self.IMs = IMs
-        self.OMs = OMs
-
-    def input_type_checker(self):
-        """
-        Check if data is format [ [input_matrices, output_matricies] ]
-        or [ [IM1, OM1] ... ]
-        :return: wrapper around *args **kwargs
-        """
-
-class BackgroundIndicator(UniversalLearner):
-    def __init__(self, IMs, OMs):
-        super(BackgroundIndicator, self).__init__(IMs, OMs)
-
-    def naive_solve(self):
-        pass
-
-    def color(self):
         pass
 
 
@@ -164,7 +127,7 @@ class EasyAgent:
 
 
     def find_background(self):
-        return max(self.classes)
+        return max(self.OM.Tclasses)
 
     def process_input_matrix(self):
         # Find
